@@ -8,9 +8,9 @@ export async function ProfileStats({ profile }: { profile: { github_handle?: str
   if (!profile) return null;
 
   const [github, leetcode, codeforces] = await Promise.all([
-    profile.github_handle ? fetchGitHubStats(profile.github_handle) : Promise.resolve(null),
-    profile.leetcode_handle ? fetchLeetCodeStats(profile.leetcode_handle) : Promise.resolve(null),
-    profile.codeforces_handle ? fetchCodeforcesStats(profile.codeforces_handle) : Promise.resolve(null),
+    profile.github_handle ? fetchGitHubStats(profile.github_handle).catch(() => null) : Promise.resolve(null),
+    profile.leetcode_handle ? fetchLeetCodeStats(profile.leetcode_handle).catch(() => null) : Promise.resolve(null),
+    profile.codeforces_handle ? fetchCodeforcesStats(profile.codeforces_handle).catch(() => null) : Promise.resolve(null),
   ]);
 
   return (

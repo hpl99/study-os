@@ -4,10 +4,30 @@ import { ProblemsTable } from "@/features/dsa/components/problems-table";
 import { AnalyticsDashboard } from "@/features/dsa/components/analytics-dashboard";
 import { AITopicAnalyzer } from "@/features/dsa/components/ai-topic-analyzer";
 import { Terminal } from "lucide-react";
+import { Suspense } from "react";
 
-export default async function DSAPage() {
+async function DSAContent() {
   const { data: problems, error } = await getProblems();
 
+  if (error) {
+    return (
+      <div className="p-4 bg-orange-500/10 border border-orange-500/20 text-orange-500 rounded-lg text-sm">
+        <p className="font-medium mb-1">Waiting for Database Initialization</p>
+        <p className="opacity-80">The DSA tracker features will be available once the database migration is complete. ({error})</p>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      <AITopicAnalyzer problems={problems || []} />
+      <AnalyticsDashboard data={problems || []} />
+      <ProblemsTable data={problems || []} />
+    </>
+  );
+}
+
+export default function DSAPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -23,17 +43,9 @@ export default async function DSAPage() {
         <AddProblemModal />
       </div>
 
-      {error ? (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg">
-          Failed to load problems: {error}
-        </div>
-      ) : (
-        <>
-          <AITopicAnalyzer problems={problems || []} />
-          <AnalyticsDashboard data={problems || []} />
-          <ProblemsTable data={problems || []} />
-        </>
-      )}
+      <Suspense fallback={<div className="h-64 animate-pulse bg-white/5 rounded-xl border border-white/10" />}>
+        <DSAContent />
+      </Suspense>
     </div>
   );
 }

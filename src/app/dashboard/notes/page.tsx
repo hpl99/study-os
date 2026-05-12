@@ -1,10 +1,24 @@
 import { BookOpen } from "lucide-react";
 import { getNotes } from "@/features/notes/actions";
 import { NotesLayout } from "@/features/notes/components/notes-layout";
+import { Suspense } from "react";
 
-export default async function NotesPage() {
+async function NotesContent() {
   const { data: notes, error } = await getNotes();
 
+  if (error) {
+    return (
+      <div className="p-4 bg-orange-500/10 border border-orange-500/20 text-orange-500 rounded-lg text-sm">
+        <p className="font-medium mb-1">Waiting for Database Initialization</p>
+        <p className="opacity-80">The Notes system will be available once the database migration is complete. ({error})</p>
+      </div>
+    );
+  }
+
+  return <NotesLayout initialNotes={notes || []} />;
+}
+
+export default function NotesPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
@@ -17,13 +31,9 @@ export default async function NotesPage() {
         </p>
       </div>
 
-      {error ? (
-        <div className="p-4 bg-red-500/10 border border-red-500/20 text-red-500 rounded-lg">
-          Failed to load notes: {error}
-        </div>
-      ) : (
-        <NotesLayout initialNotes={notes || []} />
-      )}
+      <Suspense fallback={<div className="h-64 animate-pulse bg-white/5 rounded-xl border border-white/10" />}>
+        <NotesContent />
+      </Suspense>
     </div>
   );
 }
