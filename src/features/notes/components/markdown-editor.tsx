@@ -30,13 +30,6 @@ export function MarkdownEditor({ note, onSave }: MarkdownEditorProps) {
   const [debouncedContent] = useDebounce(content, 2000);
   const [debouncedTitle] = useDebounce(title, 2000);
 
-  useEffect(() => {
-    // Autosave logic
-    if ((debouncedContent !== note?.content || debouncedTitle !== note?.title) && debouncedTitle) {
-      handleSave(true);
-    }
-  }, [debouncedContent, debouncedTitle]);
-
   const handleSave = async (isAutosave = false) => {
     if (!title.trim()) {
       if (!isAutosave) toast.error("Title is required");
@@ -60,6 +53,15 @@ export function MarkdownEditor({ note, onSave }: MarkdownEditorProps) {
     }
   };
 
+  useEffect(() => {
+    // Autosave logic
+    if ((debouncedContent !== note?.content || debouncedTitle !== note?.title) && debouncedTitle) {
+      const timer = setTimeout(() => handleSave(true), 0);
+      return () => clearTimeout(timer);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [debouncedContent, debouncedTitle]);
+
   return (
     <div className="flex flex-col h-[calc(100vh-12rem)] border border-white/10 rounded-xl overflow-hidden bg-white/5 backdrop-blur-xl">
       <div className="flex items-center justify-between p-2 border-b border-white/10 bg-black/20">
@@ -74,7 +76,7 @@ export function MarkdownEditor({ note, onSave }: MarkdownEditorProps) {
         <div className="flex items-center gap-2 px-2">
           <select 
             value={confidence}
-            onChange={(e) => setConfidence(e.target.value as any)}
+            onChange={(e) => setConfidence(e.target.value as "Low" | "Medium" | "High")}
             className={`text-xs font-medium px-2 py-1.5 rounded-md border-0 outline-none ${
               confidence === 'Low' ? 'bg-red-500/20 text-red-500' :
               confidence === 'Medium' ? 'bg-yellow-500/20 text-yellow-500' :
@@ -105,11 +107,11 @@ export function MarkdownEditor({ note, onSave }: MarkdownEditorProps) {
             <ReactMarkdown
               remarkPlugins={[remarkGfm]}
               components={{
-                code({node, inline, className, children, ...props}: any) {
+                code({inline, className, children, ...props}: React.HTMLAttributes<HTMLElement> & { inline?: boolean }) {
                   const match = /language-(\w+)/.exec(className || '')
                   return !inline && match ? (
                     <SyntaxHighlighter
-                      style={vscDarkPlus as any}
+                      style={vscDarkPlus as { [key: string]: React.CSSProperties }}
                       language={match[1]}
                       PreTag="div"
                       {...props}

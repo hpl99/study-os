@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { updateUserProfile } from "../actions";
 import { toast } from "sonner";
 
-export function ProfileForm({ initialData }: { initialData: any }) {
+export function ProfileForm({ initialData }: { initialData: { github_handle?: string, leetcode_handle?: string, codeforces_handle?: string } | null }) {
   const [isPending, setIsPending] = useState(false);
 
   async function onSubmit(formData: FormData) {

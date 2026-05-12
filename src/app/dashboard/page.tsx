@@ -11,7 +11,7 @@ export default async function DashboardPage() {
     <div className="space-y-6">
       <div>
         <h2 className="text-3xl font-bold tracking-tight">Overview</h2>
-        <p className="text-muted-foreground mt-1">Here's what's happening with your learning journey today.</p>
+        <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening with your learning journey today.</p>
       </div>
 
       <ProfileStats profile={profile} />
@@ -80,7 +80,7 @@ export default async function DashboardPage() {
                 <div 
                   key={i} 
                   className="w-3 h-3 rounded-sm bg-primary" 
-                  style={{ opacity: Math.max(0.1, Math.random()) }} 
+                  style={{ opacity: Math.max(0.1, (i * 13 % 100) / 100) }} 
                 />
               ))}
             </div>

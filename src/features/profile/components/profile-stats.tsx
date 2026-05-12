@@ -4,7 +4,7 @@ import { fetchGitHubStats } from "@/services/github";
 import { fetchLeetCodeStats } from "@/services/leetcode";
 import { fetchCodeforcesStats } from "@/services/codeforces";
 
-export async function ProfileStats({ profile }: { profile: any }) {
+export async function ProfileStats({ profile }: { profile: { github_handle?: string, leetcode_handle?: string, codeforces_handle?: string } | null }) {
   if (!profile) return null;
 
   const [github, leetcode, codeforces] = await Promise.all([

@@ -11,7 +11,7 @@ const Icons = {
   Server,
   Globe,
   Database
-} as Record<string, any>;
+} as Record<string, React.ElementType>;
 
 interface RoadmapCardProps {
   roadmap: Roadmap;

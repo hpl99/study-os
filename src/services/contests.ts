@@ -16,8 +16,8 @@ export async function fetchContests(): Promise<Contest[]> {
     const contests: Contest[] = [];
 
     if (cfData.status === "OK") {
-      const upcoming = cfData.result.filter((c: any) => c.phase === "BEFORE");
-      upcoming.forEach((c: any) => {
+      const upcoming = cfData.result.filter((c: { phase: string }) => c.phase === "BEFORE");
+      upcoming.forEach((c: { id: number; name: string; startTimeSeconds: number; durationSeconds: number }) => {
         contests.push({
           id: `cf-${c.id}`,
           name: c.name,

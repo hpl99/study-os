@@ -14,7 +14,7 @@ const PLATFORM_COLORS = {
 };
 
 function CountdownTimer({ targetSeconds }: { targetSeconds: number }) {
-  const [timeLeft, setTimeLeft] = useState(targetSeconds - Math.floor(Date.now() / 1000));
+  const [timeLeft, setTimeLeft] = useState(0);
 
   useEffect(() => {
     const interval = setInterval(() => {

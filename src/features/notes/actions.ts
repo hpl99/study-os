@@ -27,7 +27,7 @@ export async function saveNote(note: Partial<UserNote> & { title: string, conten
   if (!user) return { error: "Unauthorized" };
 
   // Calculate next revision date based on confidence
-  let nextRevision = new Date();
+  const nextRevision = new Date();
   if (note.confidence_level === "High") nextRevision.setDate(nextRevision.getDate() + 14);
   else if (note.confidence_level === "Medium") nextRevision.setDate(nextRevision.getDate() + 3);
   else nextRevision.setDate(nextRevision.getDate() + 1);
