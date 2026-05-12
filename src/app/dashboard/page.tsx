@@ -2,7 +2,8 @@ import { Flame, Target, Trophy, Map, Activity } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
 import { getUserProfile } from "@/features/profile/actions";
-import { ProfileStats } from "@/features/profile/components/profile-stats";
+import { ProfileStats, ProfileStatsSkeleton } from "@/features/profile/components/profile-stats";
+import { Suspense } from "react";
 
 export default async function DashboardPage() {
   const profile = await getUserProfile();
@@ -14,7 +15,9 @@ export default async function DashboardPage() {
         <p className="text-muted-foreground mt-1">Here&apos;s what&apos;s happening with your learning journey today.</p>
       </div>
 
-      <ProfileStats profile={profile} />
+      <Suspense fallback={<ProfileStatsSkeleton />}>
+        <ProfileStats profile={profile} />
+      </Suspense>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {/* Streak Widget */}

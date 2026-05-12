@@ -92,3 +92,26 @@ export async function ProfileStats({ profile }: { profile: { github_handle?: str
     </div>
   );
 }
+
+export function ProfileStatsSkeleton() {
+  return (
+    <div className="grid gap-6 md:grid-cols-3">
+      {[1, 2, 3].map((i) => (
+        <Card key={i} className="bg-white/5 border-white/10 backdrop-blur-xl animate-pulse">
+          <CardHeader className="pb-2 flex flex-row items-center justify-between">
+            <div className="h-5 w-24 bg-white/10 rounded"></div>
+          </CardHeader>
+          <CardContent>
+            <div className="flex items-center gap-4 mt-2">
+              <div className="w-12 h-12 rounded-full bg-white/10"></div>
+              <div className="space-y-2">
+                <div className="h-6 w-16 bg-white/10 rounded"></div>
+                <div className="h-3 w-20 bg-white/10 rounded"></div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}

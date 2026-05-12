@@ -2,6 +2,7 @@ import { getProblems } from "@/features/dsa/actions";
 import { AddProblemModal } from "@/features/dsa/components/add-problem-modal";
 import { ProblemsTable } from "@/features/dsa/components/problems-table";
 import { AnalyticsDashboard } from "@/features/dsa/components/analytics-dashboard";
+import { AITopicAnalyzer } from "@/features/dsa/components/ai-topic-analyzer";
 import { Terminal } from "lucide-react";
 
 export default async function DSAPage() {
@@ -28,6 +29,7 @@ export default async function DSAPage() {
         </div>
       ) : (
         <>
+          <AITopicAnalyzer problems={problems || []} />
           <AnalyticsDashboard data={problems || []} />
           <ProblemsTable data={problems || []} />
         </>

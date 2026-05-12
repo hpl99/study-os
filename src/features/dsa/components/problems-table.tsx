@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import {
   ColumnDef,
   flexRender,
@@ -30,6 +30,7 @@ export function ProblemsTable({ data }: ProblemsTableProps) {
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
   const [globalFilter, setGlobalFilter] = useState("");
   const [debouncedGlobalFilter] = useDebounce(globalFilter, 300);
+  const [isPending, startTransition] = useTransition();
 
   const columns: ColumnDef<UserProblem>[] = [
     {
@@ -95,7 +96,12 @@ export function ProblemsTable({ data }: ProblemsTableProps) {
               variant="ghost" 
               size="icon" 
               className="h-8 w-8 hover:text-yellow-500"
-              onClick={() => toggleBookmark(problem.id, problem.is_bookmarked)}
+              disabled={isPending}
+              onClick={() => {
+                startTransition(async () => {
+                  await toggleBookmark(problem.id, problem.is_bookmarked);
+                });
+              }}
             >
               <Star className={`w-4 h-4 ${problem.is_bookmarked ? "fill-yellow-500 text-yellow-500" : "text-muted-foreground"}`} />
             </Button>
@@ -103,8 +109,13 @@ export function ProblemsTable({ data }: ProblemsTableProps) {
               variant="ghost" 
               size="icon" 
               className="h-8 w-8 hover:text-red-500"
+              disabled={isPending}
               onClick={() => {
-                if (confirm("Delete this record?")) deleteProblem(problem.id);
+                if (confirm("Delete this record?")) {
+                  startTransition(async () => {
+                    await deleteProblem(problem.id);
+                  });
+                }
               }}
             >
               <Trash2 className="w-4 h-4 text-muted-foreground" />

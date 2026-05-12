@@ -111,7 +111,8 @@ export function MarkdownEditor({ note, onSave }: MarkdownEditorProps) {
                   const match = /language-(\w+)/.exec(className || '')
                   return !inline && match ? (
                     <SyntaxHighlighter
-                      style={vscDarkPlus as { [key: string]: React.CSSProperties }}
+                      // @ts-expect-error - React Syntax Highlighter types mismatch
+                      style={vscDarkPlus}
                       language={match[1]}
                       PreTag="div"
                       {...props}

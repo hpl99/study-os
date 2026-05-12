@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,18 +13,21 @@ import { toast } from "sonner";
 export function AddProblemModal() {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
+  const [isPendingTrans, startTransition] = useTransition();
 
   async function onSubmit(formData: FormData) {
     setIsPending(true);
-    const result = await addProblem(formData);
-    setIsPending(false);
-    
-    if (result.error) {
-      toast.error(result.error);
-    } else {
-      toast.success("Problem added successfully!");
-      setOpen(false);
-    }
+    startTransition(async () => {
+      const result = await addProblem(formData);
+      setIsPending(false);
+      
+      if (result.error) {
+        toast.error(result.error);
+      } else {
+        toast.success("Problem added successfully!");
+        setOpen(false);
+      }
+    });
   }
 
   return (
