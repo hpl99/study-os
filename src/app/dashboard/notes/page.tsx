@@ -9,8 +9,8 @@ async function NotesContent() {
   if (error) {
     return (
       <div className="p-4 bg-orange-500/10 border border-orange-500/20 text-orange-500 rounded-lg text-sm">
-        <p className="font-medium mb-1">Waiting for Database Initialization</p>
-        <p className="opacity-80">The Notes system will be available once the database migration is complete. ({error})</p>
+        <p className="font-medium mb-1">Unable to load notes</p>
+        <p className="opacity-80">We couldn't fetch your notes right now. Please make sure your database is initialized and try again.</p>
       </div>
     );
   }

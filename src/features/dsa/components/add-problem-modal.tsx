@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { FormEvent, useState, useTransition } from "react";
 import { Plus, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,9 +13,12 @@ import { toast } from "sonner";
 export function AddProblemModal() {
   const [open, setOpen] = useState(false);
   const [isPending, setIsPending] = useState(false);
-  const [isPendingTrans, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
 
-  async function onSubmit(formData: FormData) {
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+
     setIsPending(true);
     startTransition(async () => {
       const result = await addProblem(formData);
@@ -42,7 +45,7 @@ export function AddProblemModal() {
             Add a newly solved DSA problem to your tracker.
           </DialogDescription>
         </DialogHeader>
-        <form action={onSubmit} className="space-y-4 mt-4">
+        <form onSubmit={handleSubmit} className="space-y-4 mt-4">
           <div className="space-y-2">
             <Label htmlFor="title">Problem Title</Label>
             <Input id="title" name="title" required placeholder="e.g. Two Sum" className="bg-white/5 border-white/10" />

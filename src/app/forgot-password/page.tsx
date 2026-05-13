@@ -1,13 +1,51 @@
+"use client";
+
+import { FormEvent, useState } from "react";
 import Link from "next/link";
 import { Zap, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
 
-// Note: actual reset logic needs to be implemented in actions.ts
-export default async function ForgotPasswordPage(props: { searchParams: Promise<{ message: string }> }) {
-  const searchParams = await props.searchParams;
-  const message = searchParams.message;
+export default function ForgotPasswordPage() {
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const formData = new FormData(event.currentTarget);
+    const email = (formData.get("email") as string)?.trim();
+
+    if (!email) {
+      toast.error("Please enter a valid email address.");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/auth/reset-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
+
+      const result = await response.json();
+      if (!response.ok) {
+        toast.error(result.error || "Unable to send reset instructions.");
+        setMessage(null);
+      } else {
+        toast.success(result.message || "Reset instructions sent.");
+        setMessage(result.message || "Check your email for the password reset link.");
+      }
+    } catch (error) {
+      console.error("Password reset request failed:", error);
+      toast.error("Unable to send reset instructions right now.");
+      setMessage(null);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
@@ -20,11 +58,11 @@ export default async function ForgotPasswordPage(props: { searchParams: Promise<
             <span>StudyOS</span>
           </Link>
           <h2 className="text-3xl font-bold tracking-tight">Reset password</h2>
-          <p className="text-muted-foreground mt-2">Include the email address associated with your account and we’ll send you an email with instructions to reset your password.</p>
+          <p className="text-muted-foreground mt-2">Include the email address associated with your account and we’ll send you instructions to reset your password.</p>
         </div>
 
         <div className="bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl">
-          <form className="space-y-6" action="/auth/reset-password">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="email">Email address</Label>
               <Input
@@ -44,8 +82,8 @@ export default async function ForgotPasswordPage(props: { searchParams: Promise<
               </div>
             )}
 
-            <Button type="submit" className="w-full h-11 text-base shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)]">
-              Send reset instructions
+            <Button type="submit" disabled={isSubmitting} className="w-full h-11 text-base shadow-[0_0_20px_-5px_rgba(168,85,247,0.4)]">
+              {isSubmitting ? "Sending..." : "Send reset instructions"}
             </Button>
           </form>
         </div>

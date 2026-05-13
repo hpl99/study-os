@@ -1,13 +1,43 @@
 import { getAllRoadmaps } from "@/data/roadmaps";
 import { RoadmapCard } from "@/features/roadmaps/components/roadmap-card";
 import { getUserRoadmapProgress } from "@/features/roadmaps/actions";
+import { Suspense } from "react";
 
-export default async function RoadmapsPage() {
+/**
+ * Helper component to render roadmap cards with progress.
+ * Separated from main component to properly handle async operations.
+ */
+async function RoadmapsGrid() {
   const roadmaps = getAllRoadmaps();
   
-  // In a real app we'd fetch progress for all roadmaps efficiently,
-  // but for the demo we'll just map it directly.
-  
+  // Fetch progress for all roadmaps in parallel
+  const roadmapsWithProgress = await Promise.all(
+    roadmaps.map(async (roadmap) => ({
+      roadmap,
+      progress: await getUserRoadmapProgress(roadmap.id),
+    }))
+  );
+
+  return (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {roadmapsWithProgress.map(({ roadmap, progress }) => {
+        const completedCount = progress.filter((p) => p.is_completed).length;
+        return (
+          <RoadmapCard 
+            key={roadmap.id} 
+            roadmap={roadmap} 
+            completedTopics={completedCount} 
+          />
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * Roadmaps Page - shows all available learning roadmaps
+ */
+export default async function RoadmapsPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-2">
@@ -17,21 +47,25 @@ export default async function RoadmapsPage() {
         </p>
       </div>
 
-      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {roadmaps.map(async (roadmap) => {
-          // Fetch progress for this specific roadmap
-          const progress = await getUserRoadmapProgress(roadmap.id);
-          const completedCount = progress.filter((p) => p.is_completed).length;
+      <Suspense fallback={<RoadmapsSkeleton />}>
+        <RoadmapsGrid />
+      </Suspense>
+    </div>
+  );
+}
 
-          return (
-            <RoadmapCard 
-              key={roadmap.id} 
-              roadmap={roadmap} 
-              completedTopics={completedCount} 
-            />
-          );
-        })}
-      </div>
+/**
+ * Loading skeleton for roadmaps grid
+ */
+function RoadmapsSkeleton() {
+  return (
+    <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      {Array.from({ length: 3 }).map((_, i) => (
+        <div
+          key={i}
+          className="h-64 rounded-xl bg-white/5 border border-white/10 animate-pulse"
+        />
+      ))}
     </div>
   );
 }

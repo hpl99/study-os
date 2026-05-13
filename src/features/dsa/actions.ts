@@ -39,6 +39,7 @@ export async function addProblem(formData: FormData) {
     time_taken_mins: formData.get("time_taken_mins") ? parseInt(formData.get("time_taken_mins") as string) : null,
     status: "Solved",
     is_bookmarked: false,
+    solved_at: new Date().toISOString(),
   };
 
   const { error } = await supabase.from("user_problems").insert([payload]);

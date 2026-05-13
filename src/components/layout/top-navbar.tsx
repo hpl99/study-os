@@ -4,7 +4,8 @@ import { Menu, Search, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Sidebar } from "./sidebar";
-import { logout } from "@/features/auth/actions";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -15,6 +16,21 @@ import {
 } from "@/components/ui/dropdown-menu";
 
 export function TopNavbar() {
+  const router = useRouter();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsSigningOut(true);
+
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' });
+    } catch (error) {
+      console.error('Logout failed:', error);
+    } finally {
+      router.push('/login');
+    }
+  };
+
   return (
     <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-x-4 border-b border-white/10 bg-black/40 backdrop-blur-xl px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
       {/* Mobile Sidebar Trigger */}
@@ -67,17 +83,13 @@ export function TopNavbar() {
                 Settings
               </DropdownMenuItem>
               <DropdownMenuSeparator className="bg-white/10" />
-              <DropdownMenuItem 
-                className="text-destructive focus:bg-destructive/10 focus:text-destructive cursor-pointer"
-                onClick={() => {
-                  const form = document.createElement('form');
-                  form.action = '/api/auth/logout'; // To avoid using client actions directly, we'll create a dedicated logout route or call action
-                  // Actually since this is a client component, we can use transition
+              <DropdownMenuItem
+                className="text-destructive"
+                onSelect={() => {
+                  handleLogout();
                 }}
               >
-                <form action={logout} className="w-full">
-                  <button type="submit" className="w-full text-left">Sign out</button>
-                </form>
+                Sign out
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

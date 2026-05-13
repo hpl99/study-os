@@ -1,8 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import { format } from "date-fns";
-import { Search, Plus, BookOpen, Clock, Brain } from "lucide-react";
+import { Search, Plus, BookOpen, Clock, Brain, Trash2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { MarkdownEditor } from "./markdown-editor";
@@ -13,6 +13,7 @@ export function NotesLayout({ initialNotes }: { initialNotes: UserNote[] }) {
   const [notes, setNotes] = useState<UserNote[]>(initialNotes);
   const [activeNoteId, setActiveNoteId] = useState<string | null>(notes[0]?.id || null);
   const [search, setSearch] = useState("");
+  const [isPending, startTransition] = useTransition();
 
   const activeNote = notes.find(n => n.id === activeNoteId);
 
@@ -23,6 +24,25 @@ export function NotesLayout({ initialNotes }: { initialNotes: UserNote[] }) {
 
   const handleCreateNew = () => {
     setActiveNoteId("new");
+  };
+
+  const handleDeleteNote = async (id: string) => {
+    if (!confirm("Delete this note permanently?")) return;
+
+    startTransition(async () => {
+      const result = await deleteNote(id);
+      if (!result || result.error) {
+        console.error(result?.error || "Unknown delete error");
+        return;
+      }
+
+      const nextNotes = notes.filter((note) => note.id !== id);
+      setNotes(nextNotes);
+
+      if (activeNoteId === id) {
+        setActiveNoteId(nextNotes[0]?.id ?? null);
+      }
+    });
   };
 
   const handleSave = (savedNote: UserNote) => {
@@ -96,15 +116,30 @@ export function NotesLayout({ initialNotes }: { initialNotes: UserNote[] }) {
       </div>
 
       {/* Editor Area */}
-      <div className="flex-1">
+      <div className="flex-1 relative">
         {activeNoteId === "new" ? (
-          <MarkdownEditor onSave={handleSave} />
+          <MarkdownEditor key="new" onSave={handleSave} />
         ) : activeNote ? (
           <MarkdownEditor key={activeNote.id} note={activeNote} onSave={handleSave} />
         ) : (
           <div className="h-full flex flex-col items-center justify-center text-muted-foreground border border-white/10 rounded-xl bg-white/5 border-dashed">
             <BookOpen className="w-12 h-12 mb-4 opacity-20" />
             <p>Select a note or create a new one</p>
+          </div>
+        )}
+
+        {activeNote && (
+          <div className="absolute bottom-6 right-6">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => handleDeleteNote(activeNote.id)}
+              disabled={isPending}
+              className="text-destructive"
+            >
+              <Trash2 className="w-4 h-4" />
+              Delete note
+            </Button>
           </div>
         )}
       </div>
