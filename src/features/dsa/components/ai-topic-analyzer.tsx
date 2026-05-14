@@ -5,7 +5,7 @@ import { Sparkles, Loader2 } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { UserProblem } from "../types";
-import { analyzeWeakTopics } from "@/services/ai/gemini";
+import { getTopicAnalysis } from "../actions";
 import ReactMarkdown from "react-markdown";
 
 export function AITopicAnalyzer({ problems }: { problems: UserProblem[] }) {
@@ -14,9 +14,8 @@ export function AITopicAnalyzer({ problems }: { problems: UserProblem[] }) {
 
   const handleAnalyze = () => {
     startTransition(async () => {
-      // Extract unique topic tags
       const topics = Array.from(new Set(problems.flatMap((p) => p.topic_tags || [])));
-      const result = await analyzeWeakTopics(topics);
+      const result = await getTopicAnalysis(topics);
       setAnalysis(result);
     });
   };

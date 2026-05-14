@@ -3,6 +3,11 @@
 import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { UserProblem, ProblemFormData } from "./types";
+import { analyzeWeakTopics } from "@/services/ai/gemini";
+
+export async function getTopicAnalysis(topics: string[]) {
+  return await analyzeWeakTopics(topics);
+}
 
 export async function getProblems(): Promise<{ data: UserProblem[] | null, error: string | null }> {
   const supabase = await createClient();

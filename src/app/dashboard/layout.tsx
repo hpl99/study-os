@@ -15,13 +15,19 @@ export default async function DashboardLayout({
     redirect("/login");
   }
 
+  const { data: profile } = await supabase
+    .from("user_profiles")
+    .select("*")
+    .eq("user_id", user.id)
+    .single();
+
   return (
     <div className="h-full bg-background">
       {/* Static sidebar for desktop */}
-      <Sidebar />
+      <Sidebar user={user} profile={profile} />
 
       <div className="lg:pl-64 flex flex-col h-full">
-        <TopNavbar />
+        <TopNavbar user={user} profile={profile} />
         
         <main className="flex-1 py-10">
           <div className="px-4 sm:px-6 lg:px-8">

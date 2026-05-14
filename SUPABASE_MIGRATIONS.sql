@@ -1,4 +1,4 @@
-﻿-- StudyOS Supabase Database Migrations
+-- StudyOS Supabase Database Migrations
 -- Complete schema for StudyOS Supabase tables and access control.
 -- Execute this file in your Supabase SQL editor.
 
@@ -300,6 +300,31 @@ CREATE TRIGGER update_contest_reminders_updated_at
 DROP TRIGGER IF EXISTS update_ai_chat_history_updated_at ON ai_chat_history;
 CREATE TRIGGER update_ai_chat_history_updated_at
   BEFORE UPDATE ON ai_chat_history
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
+-- CACHED ANALYTICS TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS cached_analytics (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  platform TEXT NOT NULL CHECK (platform IN ('LeetCode', 'Codeforces', 'GitHub')),
+  data JSONB NOT NULL,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  UNIQUE(user_id, platform)
+);
+
+CREATE INDEX IF NOT EXISTS idx_cached_analytics_user_id ON cached_analytics(user_id);
+ALTER TABLE cached_analytics ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage their own cached analytics" ON cached_analytics
+  FOR ALL USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS update_cached_analytics_updated_at ON cached_analytics;
+CREATE TRIGGER update_cached_analytics_updated_at
+  BEFORE UPDATE ON cached_analytics
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 

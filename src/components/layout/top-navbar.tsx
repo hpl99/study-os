@@ -15,9 +15,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 
-export function TopNavbar() {
+export function TopNavbar({ user, profile }: { user: any, profile: any }) {
   const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
+
+  const initials = profile?.github_handle?.substring(0, 2).toUpperCase() || user?.email?.substring(0, 2).toUpperCase() || "US";
 
   const handleLogout = async () => {
     setIsSigningOut(true);
@@ -40,7 +42,7 @@ export function TopNavbar() {
           <span className="sr-only">Open sidebar</span>
         </SheetTrigger>
         <SheetContent side="left" className="p-0 w-64 border-r-white/10 bg-background">
-          <Sidebar />
+          <Sidebar user={user} profile={profile} />
         </SheetContent>
       </Sheet>
 
@@ -70,7 +72,7 @@ export function TopNavbar() {
             <DropdownMenuTrigger render={<Button variant="ghost" className="-m-1.5 flex items-center p-1.5 rounded-full hover:bg-white/5" />}>
               <span className="sr-only">Open user menu</span>
               <div className="h-8 w-8 rounded-full bg-primary/20 flex items-center justify-center">
-                <User className="w-4 h-4 text-primary" />
+                <span className="text-xs font-bold text-primary">{initials}</span>
               </div>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-56 bg-black/90 backdrop-blur-xl border-white/10">

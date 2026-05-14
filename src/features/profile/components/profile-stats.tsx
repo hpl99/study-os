@@ -4,13 +4,13 @@ import { fetchGitHubStats } from "@/services/github";
 import { fetchLeetCodeStats } from "@/services/leetcode";
 import { fetchCodeforcesStats } from "@/services/codeforces";
 
-export async function ProfileStats({ profile }: { profile: { github_handle?: string, leetcode_handle?: string, codeforces_handle?: string } | null }) {
+export async function ProfileStats({ profile }: { profile: { user_id?: string, github_handle?: string, leetcode_handle?: string, codeforces_handle?: string } | null }) {
   if (!profile) return null;
 
   const [github, leetcode, codeforces] = await Promise.all([
-    profile.github_handle ? fetchGitHubStats(profile.github_handle).catch(() => null) : Promise.resolve(null),
-    profile.leetcode_handle ? fetchLeetCodeStats(profile.leetcode_handle).catch(() => null) : Promise.resolve(null),
-    profile.codeforces_handle ? fetchCodeforcesStats(profile.codeforces_handle).catch(() => null) : Promise.resolve(null),
+    profile.github_handle ? fetchGitHubStats(profile.github_handle, profile.user_id).catch(() => null) : Promise.resolve(null),
+    profile.leetcode_handle ? fetchLeetCodeStats(profile.leetcode_handle, profile.user_id).catch(() => null) : Promise.resolve(null),
+    profile.codeforces_handle ? fetchCodeforcesStats(profile.codeforces_handle, profile.user_id).catch(() => null) : Promise.resolve(null),
   ]);
 
   return (
@@ -23,21 +23,28 @@ export async function ProfileStats({ profile }: { profile: { github_handle?: str
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4 mt-2">
-              <img src={github.avatar} alt="GitHub" className="w-12 h-12 rounded-full border border-white/10" />
-              <div>
-                <div className="text-2xl font-bold">{github.followers}</div>
-                <div className="text-xs text-muted-foreground flex items-center gap-1">
-                  <Users className="w-3 h-3" /> Followers
+            {'error' in github && github.error ? (
+              <div className="flex flex-col items-center justify-center mt-2 py-2 text-center">
+                <div className="text-sm text-red-400 font-medium line-clamp-1">{github.message || "Failed to load stats"}</div>
+                <div className="text-[10px] text-muted-foreground mt-1">API may be unavailable</div>
+              </div>
+            ) : (
+              <div className="flex items-center gap-4 mt-2">
+                <img src={github.avatar} alt="GitHub" className="w-12 h-12 rounded-full border border-white/10" />
+                <div>
+                  <div className="text-2xl font-bold">{github.followers}</div>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1">
+                    <Users className="w-3 h-3" /> Followers
+                  </div>
+                </div>
+                <div className="ml-auto text-right">
+                  <div className="text-xl font-bold">{github.publicRepos}</div>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1 justify-end">
+                    <BookOpen className="w-3 h-3" /> Repos
+                  </div>
                 </div>
               </div>
-              <div className="ml-auto text-right">
-                <div className="text-xl font-bold">{github.publicRepos}</div>
-                <div className="text-xs text-muted-foreground flex items-center gap-1 justify-end">
-                  <BookOpen className="w-3 h-3" /> Repos
-                </div>
-              </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}

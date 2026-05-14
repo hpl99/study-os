@@ -25,9 +25,12 @@ const navigation = [
   { name: "Contests", href: "/dashboard/contests", icon: Flame },
 ];
 
-export function Sidebar() {
+export function Sidebar({ user, profile }: { user: any, profile: any }) {
   const pathname = usePathname();
   const [isAIChatOpen, setIsAIChatOpen] = useState(false);
+
+  const displayName = profile?.github_handle || user?.email?.split('@')[0] || "User";
+  const initials = displayName.substring(0, 2).toUpperCase();
 
   return (
     <>
@@ -94,11 +97,11 @@ export function Sidebar() {
       <div className="p-4 border-t border-white/10">
         <div className="flex items-center gap-3 p-2 rounded-lg bg-white/5 border border-white/5">
           <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-            <span className="text-xs font-bold text-primary">US</span>
+            <span className="text-xs font-bold text-primary">{initials}</span>
           </div>
           <div className="flex-1 overflow-hidden">
-            <p className="text-sm font-medium truncate">User</p>
-            <p className="text-xs text-muted-foreground truncate">Developer</p>
+            <p className="text-sm font-medium truncate">{displayName}</p>
+            <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
           </div>
         </div>
       </div>
