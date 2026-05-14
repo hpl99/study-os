@@ -9,23 +9,28 @@
 ## 📋 CRITICAL ISSUES (BLOCKING - MUST FIX)
 
 ### 🔴 ISSUE #1: ASYNC/PROMISE RENDERING BUG - ROADMAPS PAGE
+
 **Severity:** CRITICAL  
 **Location:** `src/app/dashboard/roadmaps/page.tsx` (Lines 15-24)  
 **Status:** ❌ BROKEN - Produces `[object Promise]` in JSX
 
 **Current Code:**
+
 ```tsx
-{roadmaps.map(async (roadmap) => {  // ❌ WRONG
-  const progress = await getUserRoadmapProgress(roadmap.id);
-  const completedCount = progress.filter((p) => p.is_completed).length;
-  return (
-    <RoadmapCard 
-      key={roadmap.id} 
-      roadmap={roadmap} 
-      completedTopics={completedCount} 
-    />
-  );
-})}
+{
+  roadmaps.map(async (roadmap) => {
+    // ❌ WRONG
+    const progress = await getUserRoadmapProgress(roadmap.id);
+    const completedCount = progress.filter((p) => p.is_completed).length;
+    return (
+      <RoadmapCard
+        key={roadmap.id}
+        roadmap={roadmap}
+        completedTopics={completedCount}
+      />
+    );
+  });
+}
 ```
 
 **Impact:** Roadmaps page renders blank/nothing - users see empty grid
@@ -37,16 +42,19 @@
 ---
 
 ### 🔴 ISSUE #2: MISSING SUPABASE DATABASE TABLES
+
 **Severity:** CRITICAL  
 **Status:** ❌ Not created - Multiple features completely broken
 
 **Missing Tables:**
+
 1. `user_problems` - DSA Tracker data
 2. `user_notes` - Notes & Revision system
 3. `user_profiles` - User profile integration
 4. `user_topic_progress` - Roadmap progress tracking
 
 **Error Message Users See:**
+
 ```
 Error: Could not find table public.user_problems
 Error: Could not find table public.user_notes
@@ -54,7 +62,8 @@ Error: Could not find table public.user_profiles
 Error: Could not find table public.user_topic_progress
 ```
 
-**Impact:** 
+**Impact:**
+
 - DSA Tracker page shows error fallback
 - Notes system completely broken
 - Profile integration broken
@@ -65,16 +74,18 @@ Error: Could not find table public.user_topic_progress
 ---
 
 ### 🔴 ISSUE #3: MISSING OAUTH CALLBACK ROUTE
+
 **Severity:** CRITICAL  
 **Location:** `src/features/auth/actions.ts` (Line 66)  
 **Status:** ❌ Route missing - OAuth logins don't work
 
 **Current Code:**
+
 ```typescript
 const { data, error } = await supabase.auth.signInWithOAuth({
   provider,
   options: {
-    redirectTo: `${getURL()}api/auth/callback`,  // ❌ Route doesn't exist
+    redirectTo: `${getURL()}api/auth/callback`, // ❌ Route doesn't exist
   },
 });
 ```
@@ -84,6 +95,7 @@ const { data, error } = await supabase.auth.signInWithOAuth({
 **Missing File:** `src/app/api/auth/callback/route.ts`
 
 **What Happens Now:**
+
 1. User clicks "Sign in with Google"
 2. Redirected to Google/GitHub
 3. After auth, callback to non-existent route
@@ -92,16 +104,19 @@ const { data, error } = await supabase.auth.signInWithOAuth({
 ---
 
 ### 🔴 ISSUE #4: MIDDLEWARE NOT AT ROOT
+
 **Severity:** CRITICAL (Pattern violation)  
 **Current Location:** `src/proxy.ts`  
 **Should Be:** `middleware.ts` (at root)
 
-**Problem:** 
+**Problem:**
+
 - Using legacy proxy pattern instead of modern Next.js middleware
 - Auth redirect logic in proxy.ts is non-standard
 - Modern edge middleware won't execute properly
 
-**Impact:** 
+**Impact:**
+
 - Session management may be unreliable
 - Auth redirects might not work consistently
 - Performance implications
@@ -109,11 +124,13 @@ const { data, error } = await supabase.auth.signInWithOAuth({
 ---
 
 ### 🔴 ISSUE #5: MISSING FUNCTION - getUserRoadmapProgress
+
 **Severity:** CRITICAL  
 **Location:** `src/app/dashboard/roadmaps/page.tsx` (Line 11)  
 **Status:** ❌ Imported but not implemented
 
-**Error:** 
+**Error:**
+
 ```
 TypeError: getUserRoadmapProgress is not a function
 ```
@@ -125,11 +142,13 @@ TypeError: getUserRoadmapProgress is not a function
 ---
 
 ### 🔴 ISSUE #6: MISSING PASSWORD RESET ENDPOINT
+
 **Severity:** CRITICAL  
 **Location:** `src/app/forgot-password/page.tsx` (Line 28)  
 **Status:** ❌ Form posts to non-existent endpoint
 
 **Current Code:**
+
 ```tsx
 <form className="space-y-6" action="/auth/reset-password">
   {/* ❌ This route doesn't exist */}
@@ -143,17 +162,20 @@ TypeError: getUserRoadmapProgress is not a function
 ---
 
 ### 🟠 ISSUE #7: MISSING GEMINI API KEY
+
 **Severity:** HIGH (Feature blocking)  
 **Location:** `src/services/ai/gemini.ts` (Line 1)  
 **Status:** ⚠️ Not configured
 
 **Current Code:**
+
 ```typescript
 const apiKey = process.env.GEMINI_API_KEY;
 const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 ```
 
 **Impact:**
+
 - AI Coach won't respond with real analysis
 - Topic analyzer shows "API key not configured" message
 - Feature gracefully degrades but doesn't work
@@ -165,6 +187,7 @@ const genAI = apiKey ? new GoogleGenerativeAI(apiKey) : null;
 ## 🟠 HIGH-PRIORITY ISSUES
 
 ### ISSUE #8: MISSING CONTEST FETCHING IMPLEMENTATION
+
 **Severity:** HIGH  
 **Location:** `src/services/contests.ts`  
 **Status:** ⚠️ File exists but function not implemented
@@ -181,6 +204,7 @@ export async function fetchContests() {
 **Impact:** Contests page loads but shows no data
 
 **Options:**
+
 1. Implement real fetching from Codeforces/LeetCode API
 2. Use mock data for MVP
 3. Remove feature entirely
@@ -188,14 +212,18 @@ export async function fetchContests() {
 ---
 
 ### ISSUE #9: TOP NAVBAR LOGOUT PATTERN INCONSISTENCY
+
 **Severity:** MEDIUM  
 **Location:** `src/components/layout/top-navbar.tsx` (Line 61-65)  
 **Status:** ⚠️ Works but suboptimal pattern
 
 **Current Code:**
+
 ```tsx
 <form action={logout}>
-  <button type="submit" className="w-full text-left">Sign out</button>
+  <button type="submit" className="w-full text-left">
+    Sign out
+  </button>
 </form>
 ```
 
@@ -206,11 +234,13 @@ export async function fetchContests() {
 ---
 
 ### ISSUE #10: DASHBOARD HARDCODED MOCK DATA
+
 **Severity:** MEDIUM  
 **Location:** `src/app/dashboard/page.tsx` (Lines 28-70)  
 **Status:** ⚠️ All stats are hardcoded
 
 **Examples:**
+
 ```tsx
 <div className="text-2xl font-bold">12 Days</div>        // Streak
 <div className="text-2xl font-bold">248</div>            // Problems
@@ -221,6 +251,7 @@ export async function fetchContests() {
 **Impact:** Dashboard doesn't show real user data
 
 **Should Come From:**
+
 - Streaks table (not created yet)
 - user_problems table data
 - External APIs (Codeforces, LeetCode)
@@ -231,8 +262,10 @@ export async function fetchContests() {
 ## 🟡 MEDIUM-PRIORITY ISSUES
 
 ### ISSUE #11: NO ERROR BOUNDARIES
+
 **Status:** ⚠️ Missing error.tsx files
-**Locations:** 
+**Locations:**
+
 - `src/app/error.tsx` - Global error handler (missing)
 - `src/app/dashboard/error.tsx` - Dashboard errors (missing)
 - `src/app/not-found.tsx` - 404 page (missing)
@@ -242,15 +275,18 @@ export async function fetchContests() {
 ---
 
 ### ISSUE #12: TYPE SAFETY - UNSAFE CASTS
+
 **Severity:** MEDIUM  
-**Locations:** 
+**Locations:**
+
 - `src/features/dsa/actions.ts` - Line 18
 - `src/features/notes/actions.ts` - Line 16
 - Other server action files
 
 **Current Code:**
+
 ```typescript
-return { data: data as UserProblem[], error: null };  // ❌ Unsafe
+return { data: data as UserProblem[], error: null }; // ❌ Unsafe
 ```
 
 **Better:** Validate data before casting
@@ -258,15 +294,19 @@ return { data: data as UserProblem[], error: null };  // ❌ Unsafe
 ---
 
 ### ISSUE #13: INCONSISTENT ERROR MESSAGES
+
 **Severity:** MEDIUM  
 **Locations:**
+
 - `src/app/dashboard/dsa/page.tsx` (Line 13-17)
 - `src/app/dashboard/notes/page.tsx` (Line 9-13)
 
 **Problem:** Raw database errors exposed to users
 
 ```tsx
-{error} // ❌ Shows "Could not find table public.user_problems"
+{
+  error;
+} // ❌ Shows "Could not find table public.user_problems"
 ```
 
 **Should:** Show friendly message, hide implementation details
@@ -274,8 +314,10 @@ return { data: data as UserProblem[], error: null };  // ❌ Unsafe
 ---
 
 ### ISSUE #14: MISSING LOADING/SKELETON STATES
+
 **Severity:** MEDIUM  
 **Locations:**
+
 - Profile stats fetching
 - Contest list loading
 - Some async transitions
@@ -285,8 +327,10 @@ return { data: data as UserProblem[], error: null };  // ❌ Unsafe
 ---
 
 ### ISSUE #15: NO FORM VALIDATION
+
 **Severity:** MEDIUM  
 **Locations:**
+
 - Add problem modal
 - Profile form
 - Note editor
@@ -294,6 +338,7 @@ return { data: data as UserProblem[], error: null };  // ❌ Unsafe
 **Current:** Only HTML5 validation (type="email", required, etc.)
 
 **Missing:**
+
 - Length validation
 - Format validation
 - Cross-field validation
@@ -308,27 +353,28 @@ return { data: data as UserProblem[], error: null };  // ❌ Unsafe
 ✅ Suspense boundaries usage  
 ✅ TypeScript configuration  
 ✅ Component organization by feature  
-✅ Environment variable setup  
+✅ Environment variable setup
 
 ---
 
 ## 📊 ISSUE SUMMARY
 
-| Category | Count | Examples |
-|----------|-------|----------|
-| Critical (Blocking) | 6 | Async bug, Missing tables, No OAuth callback |
-| High Priority | 3 | Contest fetching, Mock data, Navbar pattern |
-| Medium Priority | 6 | Error boundaries, Type safety, Validation |
-| Low Priority | 2 | Performance, Testing |
+| Category            | Count | Examples                                     |
+| ------------------- | ----- | -------------------------------------------- |
+| Critical (Blocking) | 6     | Async bug, Missing tables, No OAuth callback |
+| High Priority       | 3     | Contest fetching, Mock data, Navbar pattern  |
+| Medium Priority     | 6     | Error boundaries, Type safety, Validation    |
+| Low Priority        | 2     | Performance, Testing                         |
 
 **Total Actionable Issues:** 17  
-**Estimated Time to Fix:** 8-12 hours  
+**Estimated Time to Fix:** 8-12 hours
 
 ---
 
 ## 🛠️ QUICK FIX CHECKLIST
 
 ### Priority 1 - BLOCKING (Do first)
+
 - [ ] Fix async/await in roadmaps page
 - [ ] Create database tables (user_problems, user_notes, user_profiles, user_topic_progress)
 - [ ] Add OAuth callback route (`src/app/api/auth/callback/route.ts`)
@@ -336,12 +382,14 @@ return { data: data as UserProblem[], error: null };  // ❌ Unsafe
 - [ ] Implement `getUserRoadmapProgress` function
 
 ### Priority 2 - HIGH (Do next)
+
 - [ ] Add password reset endpoint (`src/app/api/auth/forgot-password/route.ts`)
 - [ ] Implement contests fetching or remove feature
 - [ ] Create error.tsx and not-found.tsx
 - [ ] Add GEMINI_API_KEY to .env.local
 
 ### Priority 3 - STABILITY (Polish)
+
 - [ ] Fix error messages (don't expose DB errors)
 - [ ] Add loading states where missing
 - [ ] Remove hardcoded dashboard data
@@ -355,6 +403,7 @@ return { data: data as UserProblem[], error: null };  // ❌ Unsafe
 **File:** See attached `SUPABASE_MIGRATIONS.sql`
 
 **Tables to Create:**
+
 1. `user_profiles` - User profile data (GitHub, LeetCode, Codeforces handles)
 2. `user_problems` - DSA problem tracking
 3. `user_notes` - Notes with confidence levels
@@ -369,6 +418,7 @@ return { data: data as UserProblem[], error: null };  // ❌ Unsafe
 **Current Score:** 35/100
 
 **Missing for Production:**
+
 - ❌ Database migrations documented
 - ❌ All critical issues fixed
 - ❌ Error pages for 404/500
@@ -377,6 +427,7 @@ return { data: data as UserProblem[], error: null };  // ❌ Unsafe
 - ❌ Logging infrastructure
 
 **Ready:**
+
 - ✅ TypeScript configuration
 - ✅ Build process
 - ✅ Auth pattern
