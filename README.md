@@ -1,36 +1,369 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# StudyOS
 
-## Getting Started
+<div align="center">
 
-First, run the development server:
+![StudyOS Banner](https://capsule-render.vercel.app/api?type=waving\&color=0:0f172a,50:111827,100:1e293b\&height=220\&section=header\&text=StudyOS\&fontSize=52\&fontColor=ffffff\&animation=fadeIn\&fontAlignY=38\&desc=Developer%20Productivity%20Platform%20for%20Students%20and%20Engineers\&descAlignY=60\&descAlign=50)
+
+</div>
+
+---
+
+# Overview
+
+StudyOS is a modern full-stack productivity platform built for developers, competitive programmers, and students.
+
+It combines:
+
+* Learning roadmaps
+* DSA tracking
+* Notes & revision systems
+* Competitive programming analytics
+* AI-powered coaching
+* Contest tracking
+* Dashboard analytics
+
+into a single unified workspace.
+
+The goal of StudyOS is to provide a focused operating system for technical learning and long-term skill development.
+
+---
+
+# Features
+
+## Authentication & Security
+
+* Google OAuth login
+* GitHub OAuth login
+* Persistent authentication sessions
+* Supabase Auth integration
+* Protected dashboard routes
+* SSR session synchronization
+
+---
+
+## Dashboard Analytics
+
+* Real LeetCode analytics
+* Real Codeforces analytics
+* GitHub profile statistics
+* Cached analytics layer
+* Real-time dashboard updates
+* Graceful API fallback handling
+
+---
+
+## DSA Tracker
+
+* Track solved problems
+* Platform categorization
+* Difficulty tracking
+* Topic-based organization
+* AI-powered weak topic analysis
+* Search & filtering support
+
+---
+
+## Learning Roadmaps
+
+Structured learning paths for:
+
+* Data Structures & Algorithms
+* Competitive Programming
+* Java Backend Development
+* Web Development
+* System Design
+
+Roadmap progress architecture is designed for:
+
+* topic completion
+* progress persistence
+* analytics integration
+* future adaptive recommendations
+
+---
+
+## Notes & Revision System
+
+* Markdown-based notes
+* Revision workflow support
+* Knowledge organization
+* Spaced repetition architecture
+* Search-ready structure
+
+---
+
+## Contest Tracker
+
+Track upcoming contests across:
+
+* Codeforces
+* LeetCode
+* AtCoder
+
+Includes:
+
+* contest countdowns
+* platform filtering
+* future reminder support
+
+---
+
+## AI Coach
+
+Gemini-powered AI assistant capable of:
+
+* DSA guidance
+* weak topic analysis
+* study recommendations
+* roadmap suggestions
+* learning assistance
+
+Built with graceful fallback handling when API keys are unavailable.
+
+---
+
+# Tech Stack
+
+## Frontend
+
+* Next.js 15 (App Router)
+* TypeScript
+* TailwindCSS
+* shadcn/ui
+* Framer Motion
+* Recharts
+
+---
+
+## Backend
+
+* Supabase
+* PostgreSQL
+* Server Actions
+* API Routes
+* Row Level Security (RLS)
+
+---
+
+## Integrations
+
+* LeetCode APIs
+* Codeforces APIs
+* GitHub APIs
+* Gemini AI
+* Resend Email Service
+
+---
+
+# Architecture
+
+```bash
+src/
+├── app/
+│   ├── dashboard/
+│   ├── api/
+│   ├── login/
+│   └── signup/
+│
+├── components/
+│   ├── layout/
+│   ├── shared/
+│   └── ui/
+│
+├── features/
+│   ├── auth/
+│   ├── dashboard/
+│   ├── dsa/
+│   ├── notes/
+│   ├── profile/
+│   ├── roadmap/
+│   └── contests/
+│
+├── services/
+│   ├── leetcode.ts
+│   ├── codeforces.ts
+│   └── ai/
+│
+├── store/
+├── hooks/
+├── utils/
+└── lib/
+```
+
+---
+
+# Database Tables
+
+Current database architecture includes:
+
+* `user_profiles`
+* `user_notes`
+* `user_problems`
+* `user_topic_progress`
+* `linked_profiles`
+* `cached_analytics`
+* `contest_reminders`
+* `revisions`
+* `bookmarks`
+
+---
+
+# Current Project Status
+
+StudyOS is currently transitioning from a prototype into a production-grade developer platform.
+
+### Stabilized Systems
+
+* Authentication
+* Session persistence
+* Dashboard rendering
+* Analytics APIs
+* Error boundaries
+* OAuth callbacks
+* Loading states
+* API fallback handling
+
+### In Progress
+
+* Real roadmap progress tracking
+* Deep analytics synchronization
+* Notes persistence
+* Notification system
+* AI personalization
+
+---
+
+# Screenshots
+
+## Dashboard
+
+* Real competitive programming analytics
+* Activity tracking architecture
+* Learning roadmap system
+* AI-powered productivity flow
+
+## DSA Tracker
+
+* Problem tracking
+* AI analysis integration
+* Topic categorization
+
+## Roadmaps
+
+* Structured learning paths
+* Modular roadmap architecture
+
+---
+
+# Local Development Setup
+
+## 1. Clone Repository
+
+```bash
+git clone <your-repo-url>
+cd study-os
+```
+
+---
+
+## 2. Install Dependencies
+
+```bash
+npm install
+```
+
+---
+
+## 3. Configure Environment Variables
+
+Create `.env.local`
+
+```env
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+GEMINI_API_KEY=
+RESEND_API_KEY=
+```
+
+---
+
+## 4. Start Development Server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+# Future Roadmap
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Planned Features
 
-## Learn More
+* Real roadmap progress engine
+* AI-powered adaptive learning
+* Daily streak analytics
+* Advanced revision scheduling
+* GitHub contribution heatmaps
+* Personalized coding recommendations
+* Mobile responsiveness improvements
+* Notification automation
+* Advanced dashboard insights
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Engineering Goals
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+StudyOS focuses heavily on:
 
-## Deploy on Vercel
+* scalable architecture
+* feature isolation
+* backend consistency
+* API resilience
+* production-grade auth
+* reliable analytics
+* maintainable frontend systems
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The project emphasizes engineering quality and system stability over feature quantity.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+# Inspiration
+
+StudyOS is inspired by the idea that:
+
+> developers need an operating system for learning, not just another todo app.
+
+It aims to combine:
+
+* roadmap learning
+* coding analytics
+* revision systems
+* AI guidance
+* productivity workflows
+
+into a unified ecosystem.
+
+---
+
+# Contributing
+
+Contributions, ideas, and improvements are welcome.
+
+If you'd like to contribute:
+
+1. Fork the repository
+2. Create a feature branch
+3. Commit changes
+4. Open a pull request
+
+---
+
+# License
+
+MIT License
+
+---
+
+# Author
+
+Built with focus, iteration, and e
