@@ -50,17 +50,24 @@ export async function ProfileStats({ profile }: { profile: { github_handle?: str
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex justify-between items-end mt-2">
-              <div>
-                <div className="text-3xl font-bold">{leetcode.totalSolved}</div>
-                <div className="text-xs text-muted-foreground">Problems Solved</div>
+            {'error' in leetcode && leetcode.error ? (
+              <div className="flex flex-col items-center justify-center mt-2 py-2 text-center">
+                <div className="text-sm text-red-400 font-medium line-clamp-1">{leetcode.message || "Failed to load stats"}</div>
+                <div className="text-[10px] text-muted-foreground mt-1">API may be unavailable</div>
               </div>
-              <div className="text-right text-xs space-y-1">
-                <div className="text-emerald-500 font-medium">Easy: {leetcode.easySolved}</div>
-                <div className="text-yellow-500 font-medium">Med: {leetcode.mediumSolved}</div>
-                <div className="text-red-500 font-medium">Hard: {leetcode.hardSolved}</div>
+            ) : (
+              <div className="flex justify-between items-end mt-2">
+                <div>
+                  <div className="text-3xl font-bold">{leetcode.totalSolved}</div>
+                  <div className="text-xs text-muted-foreground">Problems Solved</div>
+                </div>
+                <div className="text-right text-xs space-y-1">
+                  <div className="text-emerald-500 font-medium">Easy: {leetcode.easySolved}</div>
+                  <div className="text-yellow-500 font-medium">Med: {leetcode.mediumSolved}</div>
+                  <div className="text-red-500 font-medium">Hard: {leetcode.hardSolved}</div>
+                </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}
@@ -73,19 +80,26 @@ export async function ProfileStats({ profile }: { profile: { github_handle?: str
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex items-center gap-4 mt-2">
-              <img src={codeforces.avatar} alt="Codeforces" className="w-12 h-12 rounded-lg border border-white/10" />
-              <div>
-                <div className="text-2xl font-bold text-blue-400">{codeforces.rating}</div>
-                <div className="text-xs text-muted-foreground capitalize">{codeforces.rank}</div>
+            {'error' in codeforces && codeforces.error ? (
+              <div className="flex flex-col items-center justify-center mt-2 py-2 text-center">
+                <div className="text-sm text-red-400 font-medium line-clamp-1">{codeforces.message || "Failed to load stats"}</div>
+                <div className="text-[10px] text-muted-foreground mt-1">API may be unavailable</div>
               </div>
-              <div className="ml-auto text-right">
-                <div className="text-xl font-bold text-muted-foreground">{codeforces.maxRating}</div>
-                <div className="text-xs text-muted-foreground flex items-center gap-1 justify-end">
-                  <Trophy className="w-3 h-3" /> Max
+            ) : (
+              <div className="flex items-center gap-4 mt-2">
+                <img src={codeforces.avatar} alt="Codeforces" className="w-12 h-12 rounded-lg border border-white/10" />
+                <div>
+                  <div className="text-2xl font-bold text-blue-400">{codeforces.rating}</div>
+                  <div className="text-xs text-muted-foreground capitalize">{codeforces.rank}</div>
+                </div>
+                <div className="ml-auto text-right">
+                  <div className="text-xl font-bold text-muted-foreground">{codeforces.maxRating}</div>
+                  <div className="text-xs text-muted-foreground flex items-center gap-1 justify-end">
+                    <Trophy className="w-3 h-3" /> Max
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </CardContent>
         </Card>
       )}

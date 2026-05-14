@@ -10,10 +10,17 @@ export interface Contest {
 export async function fetchContests(): Promise<Contest[]> {
   const contests: Contest[] = [];
 
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 8000);
+
   try {
-    const cfRes = await fetch("https://codeforces.com/api/contest.list", { next: { revalidate: 3600 } });
+    const cfRes = await fetch("https://codeforces.com/api/contest.list", { 
+      next: { revalidate: 3600 },
+      signal: controller.signal
+    });
     if (cfRes.ok) {
       const cfData = await cfRes.json();
+      clearTimeout(timeoutId);
       if (cfData.status === "OK") {
         const upcoming = cfData.result.filter((c: { phase: string }) => c.phase === "BEFORE");
         upcoming.forEach((c: { id: number; name: string; startTimeSeconds: number; durationSeconds: number }) => {
@@ -29,6 +36,7 @@ export async function fetchContests(): Promise<Contest[]> {
       }
     }
   } catch (error) {
+    clearTimeout(timeoutId);
     console.error("Failed to fetch Codeforces contests:", error);
   }
 
