@@ -1,77 +1,102 @@
 "use client";
 
 import { useState } from "react";
-import { GitBranch, Code2, Terminal, Loader2 } from "lucide-react";
+import { GitBranch, Code2, Terminal, Loader2, Link as LinkIcon, Unlink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { updateUserProfile } from "../actions";
+import { linkProfile, unlinkProfile } from "../actions";
 import { toast } from "sonner";
 
-export function ProfileForm({ initialData }: { initialData: { github_handle?: string, leetcode_handle?: string, codeforces_handle?: string } | null }) {
-  const [isPending, setIsPending] = useState(false);
+interface LinkedProfile {
+  platform: string;
+  handle: string;
+}
 
-  async function onSubmit(formData: FormData) {
+export function ProfileForm({ linkedProfiles }: { linkedProfiles: LinkedProfile[] }) {
+  const getHandle = (platform: string) => linkedProfiles.find(p => p.platform === platform)?.handle || "";
+
+  return (
+    <div className="space-y-6">
+      <ProfileLinkRow 
+        platform="GitHub" 
+        icon={<GitBranch className="w-4 h-4" />} 
+        initialHandle={getHandle("GitHub")} 
+        placeholder="torvalds" 
+      />
+      <ProfileLinkRow 
+        platform="LeetCode" 
+        icon={<Code2 className="w-4 h-4 text-yellow-500" />} 
+        initialHandle={getHandle("LeetCode")} 
+        placeholder="tourist" 
+      />
+      <ProfileLinkRow 
+        platform="Codeforces" 
+        icon={<Terminal className="w-4 h-4 text-blue-500" />} 
+        initialHandle={getHandle("Codeforces")} 
+        placeholder="tourist" 
+      />
+    </div>
+  );
+}
+
+function ProfileLinkRow({ platform, icon, initialHandle, placeholder }: { platform: "GitHub" | "LeetCode" | "Codeforces", icon: React.ReactNode, initialHandle: string, placeholder: string }) {
+  const [handle, setHandle] = useState(initialHandle);
+  const [isPending, setIsPending] = useState(false);
+  const isLinked = !!initialHandle;
+
+  async function handleLink() {
+    if (!handle.trim()) return toast.error("Please enter a handle");
+    
     setIsPending(true);
-    const result = await updateUserProfile(formData);
+    const result = await linkProfile(platform, handle.trim());
     setIsPending(false);
 
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success("Profiles linked successfully!");
+      toast.success(`${platform} linked successfully!`);
+    }
+  }
+
+  async function handleUnlink() {
+    setIsPending(true);
+    const result = await unlinkProfile(platform);
+    setIsPending(false);
+
+    if (result.error) {
+      toast.error(result.error);
+    } else {
+      setHandle("");
+      toast.success(`${platform} unlinked.`);
     }
   }
 
   return (
-    <form action={onSubmit} className="space-y-6">
-      <div className="space-y-4">
-        <div className="space-y-2">
-          <Label htmlFor="github_handle" className="flex items-center gap-2">
-            <GitBranch className="w-4 h-4" /> GitHub Username
-          </Label>
-          <Input 
-            id="github_handle" 
-            name="github_handle" 
-            defaultValue={initialData?.github_handle || ""} 
-            placeholder="torvalds" 
-            className="bg-white/5 border-white/10" 
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="leetcode_handle" className="flex items-center gap-2 text-yellow-500">
-            <Code2 className="w-4 h-4" /> LeetCode Handle
-          </Label>
-          <Input 
-            id="leetcode_handle" 
-            name="leetcode_handle" 
-            defaultValue={initialData?.leetcode_handle || ""} 
-            placeholder="tourist" 
-            className="bg-white/5 border-white/10" 
-          />
-        </div>
-
-        <div className="space-y-2">
-          <Label htmlFor="codeforces_handle" className="flex items-center gap-2 text-blue-500">
-            <Terminal className="w-4 h-4" /> Codeforces Handle
-          </Label>
-          <Input 
-            id="codeforces_handle" 
-            name="codeforces_handle" 
-            defaultValue={initialData?.codeforces_handle || ""} 
-            placeholder="tourist" 
-            className="bg-white/5 border-white/10" 
-          />
-        </div>
+    <div className="space-y-2">
+      <Label className="flex items-center gap-2">
+        {icon} {platform} Handle
+      </Label>
+      <div className="flex items-center gap-2">
+        <Input 
+          value={handle}
+          onChange={(e) => setHandle(e.target.value)}
+          placeholder={placeholder} 
+          disabled={isLinked || isPending}
+          className="bg-white/5 border-white/10" 
+        />
+        {isLinked ? (
+          <Button type="button" variant="destructive" onClick={handleUnlink} disabled={isPending} className="shrink-0 gap-2 w-[110px]">
+            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Unlink className="w-4 h-4" />}
+            Unlink
+          </Button>
+        ) : (
+          <Button type="button" variant="default" onClick={handleLink} disabled={isPending || !handle.trim()} className="shrink-0 gap-2 w-[110px]">
+            {isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <LinkIcon className="w-4 h-4" />}
+            Link
+          </Button>
+        )}
       </div>
-
-      <div className="pt-4 flex justify-end">
-        <Button type="submit" disabled={isPending} className="gap-2">
-          {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-          Save Profiles
-        </Button>
-      </div>
-    </form>
+    </div>
   );
 }

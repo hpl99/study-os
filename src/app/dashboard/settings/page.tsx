@@ -1,10 +1,10 @@
 import { Settings, Link as LinkIcon, GitBranch, Code2, Terminal } from "lucide-react";
-import { getUserProfile } from "@/features/profile/actions";
+import { getLinkedProfiles } from "@/features/profile/actions";
 import { ProfileForm } from "@/features/profile/components/profile-form";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default async function SettingsPage() {
-  const profile = await getUserProfile();
+  const linkedProfiles = await getLinkedProfiles();
 
   return (
     <div className="space-y-6 max-w-2xl mx-auto">
@@ -28,7 +28,7 @@ export default async function SettingsPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <ProfileForm initialData={profile} />
+          <ProfileForm linkedProfiles={linkedProfiles} />
         </CardContent>
       </Card>
     </div>
