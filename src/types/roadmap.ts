@@ -1,39 +1,30 @@
 export type Difficulty = "Beginner" | "Intermediate" | "Advanced" | "Expert";
 
-export interface Resource {
-  id: string;
-  type: "video" | "article" | "book" | "documentation";
-  title: string;
-  url: string;
-  author: string;
-  duration?: string; // e.g. "15 mins", "1 hour"
-}
+export type ResourceType = "book" | "playlist" | "official-docs" | "practice";
 
-export interface PracticeProblem {
-  id: string;
+export interface Resource {
+  type: ResourceType;
   title: string;
-  url: string;
-  platform: "LeetCode" | "HackerRank" | "Codeforces" | "GeeksforGeeks" | "Other";
-  difficulty: "Easy" | "Medium" | "Hard";
+  link: string;
 }
 
 export interface Topic {
   id: string;
   title: string;
   description: string;
-  order: number;
-  prerequisites: string[]; // array of topic ids
   resources: Resource[];
-  problems: PracticeProblem[];
+  completed?: boolean;
+  progress?: number;
 }
 
 export interface Roadmap {
   id: string;
   title: string;
   description: string;
+  category: string;
   difficulty: Difficulty;
   estimatedHours: number;
-  icon: string; // lucide icon name or svg
+  icon: string;
   topics: Topic[];
 }
 
