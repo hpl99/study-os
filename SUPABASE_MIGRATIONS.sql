@@ -329,6 +329,33 @@ CREATE TRIGGER update_cached_analytics_updated_at
   EXECUTE FUNCTION update_updated_at_column();
 
 -- ============================================================================
+-- NOTIFICATION PREFERENCES TABLE
+-- ============================================================================
+CREATE TABLE IF NOT EXISTS notification_preferences (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+  email_notifications_enabled BOOLEAN DEFAULT true,
+  notify_codeforces BOOLEAN DEFAULT true,
+  notify_leetcode BOOLEAN DEFAULT true,
+  notify_atcoder BOOLEAN DEFAULT true,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+  UNIQUE(user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_notification_preferences_user_id ON notification_preferences(user_id);
+ALTER TABLE notification_preferences ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Users can manage their own notification preferences" ON notification_preferences
+  FOR ALL USING (auth.uid() = user_id)
+  WITH CHECK (auth.uid() = user_id);
+
+DROP TRIGGER IF EXISTS update_notification_preferences_updated_at ON notification_preferences;
+CREATE TRIGGER update_notification_preferences_updated_at
+  BEFORE UPDATE ON notification_preferences
+  FOR EACH ROW
+  EXECUTE FUNCTION update_updated_at_column();
+
+-- ============================================================================
 -- VERIFICATION QUERIES
 -- ============================================================================
 /*
