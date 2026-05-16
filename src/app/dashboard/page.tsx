@@ -2,6 +2,7 @@ import {
   Flame,
   Map,
   Activity,
+  ArrowRight
 } from "lucide-react";
 
 import {
@@ -13,8 +14,7 @@ import {
 } from "@/components/ui/card";
 
 import { Progress } from "@/components/ui/progress";
-
-import { getUserProfile } from "@/features/profile/actions";
+import { getDashboardData } from "@/features/dashboard/actions";
 
 import {
   ProfileStats,
@@ -22,9 +22,12 @@ import {
 } from "@/features/profile/components/profile-stats";
 
 import { Suspense } from "react";
+import Link from "next/link";
 
 export default async function DashboardPage() {
-  const profile = await getUserProfile();
+  const data = await getDashboardData();
+
+  if (!data) return null;
 
   return (
     <div className="space-y-6">
@@ -42,7 +45,7 @@ export default async function DashboardPage() {
 
       {/* REAL ANALYTICS */}
       <Suspense fallback={<ProfileStatsSkeleton />}>
-        <ProfileStats profile={profile} />
+        <ProfileStats stats={data.stats} />
       </Suspense>
 
       {/* SECONDARY WIDGETS */}
@@ -103,12 +106,11 @@ export default async function DashboardPage() {
 
           <CardContent>
             <div className="text-xl font-bold">
-              No Progress Yet
+              {data.roadmaps.length} Enrolled
             </div>
 
             <p className="text-xs text-muted-foreground mt-1">
-              Start a roadmap to track your learning
-              journey.
+              {data.roadmaps.length === 0 ? "Start a roadmap to track your learning journey." : "Keep up the great work."}
             </p>
           </CardContent>
         </Card>
@@ -148,56 +150,48 @@ export default async function DashboardPage() {
         {/* Roadmap Progress */}
         <Card className="lg:col-span-3 bg-white/5 border-white/10 backdrop-blur-xl">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Map className="w-5 h-5 text-blue-400" />
-
-              Learning Roadmaps
+            <CardTitle className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Map className="w-5 h-5 text-blue-400" />
+                Learning Roadmaps
+              </div>
+              <Link href="/dashboard/roadmaps" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
+                View All <ArrowRight className="w-3 h-3" />
+              </Link>
             </CardTitle>
 
             <CardDescription>
-              Your enrolled roadmap progress will appear
-              here.
+              Your enrolled roadmap progress
             </CardDescription>
           </CardHeader>
 
           <CardContent className="space-y-6">
-            {/* Placeholder 1 */}
-            <div className="space-y-2 opacity-60">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-sm">
-                  Data Structures & Algorithms
-                </span>
+            {data.roadmaps.length > 0 ? (
+              data.roadmaps.slice(0, 3).map((rm: any) => (
+                <div key={rm.id} className="space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="font-medium text-sm capitalize">
+                      {rm.roadmap_id.replace(/-/g, ' ')}
+                    </span>
 
-                <span className="text-sm text-muted-foreground">
-                  --
-                </span>
+                    <span className="text-sm text-muted-foreground">
+                      {rm.progress_percent}%
+                    </span>
+                  </div>
+
+                  <Progress value={rm.progress_percent} className="h-2" />
+                </div>
+              ))
+            ) : (
+              <div className="flex flex-col items-center justify-center text-center py-6">
+                <p className="text-sm font-medium text-muted-foreground">No roadmaps enrolled</p>
+                <div className="pt-4">
+                  <Link href="/dashboard/roadmaps" className="text-xs bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-md transition">
+                    Browse Roadmaps
+                  </Link>
+                </div>
               </div>
-
-              <Progress value={0} className="h-2" />
-            </div>
-
-            {/* Placeholder 2 */}
-            <div className="space-y-2 opacity-60">
-              <div className="flex items-center justify-between">
-                <span className="font-medium text-sm">
-                  System Design
-                </span>
-
-                <span className="text-sm text-muted-foreground">
-                  --
-                </span>
-              </div>
-
-              <Progress value={0} className="h-2" />
-            </div>
-
-            {/* CTA */}
-            <div className="pt-2">
-              <p className="text-xs text-muted-foreground">
-                Start tracking roadmap progress by enrolling
-                in a roadmap.
-              </p>
-            </div>
+            )}
           </CardContent>
         </Card>
       </div>

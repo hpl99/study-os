@@ -1,17 +1,16 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { GitBranch, Code2, Terminal, Users, BookOpen, Trophy } from "lucide-react";
-import { fetchGitHubStats } from "@/services/github";
-import { fetchLeetCodeStats } from "@/services/leetcode";
-import { fetchCodeforcesStats } from "@/services/codeforces";
 
-export async function ProfileStats({ profile }: { profile: { user_id?: string, github_handle?: string, leetcode_handle?: string, codeforces_handle?: string } | null }) {
-  if (!profile) return null;
+interface ProfileStatsProps {
+  stats: {
+    github: any;
+    leetcode: any;
+    codeforces: any;
+  }
+}
 
-  const [github, leetcode, codeforces] = await Promise.all([
-    profile.github_handle ? fetchGitHubStats(profile.github_handle, profile.user_id).catch(() => null) : Promise.resolve(null),
-    profile.leetcode_handle ? fetchLeetCodeStats(profile.leetcode_handle, profile.user_id).catch(() => null) : Promise.resolve(null),
-    profile.codeforces_handle ? fetchCodeforcesStats(profile.codeforces_handle, profile.user_id).catch(() => null) : Promise.resolve(null),
-  ]);
+export function ProfileStats({ stats }: ProfileStatsProps) {
+  const { github, leetcode, codeforces } = stats;
 
   return (
     <div className="grid gap-6 md:grid-cols-3">
@@ -107,6 +106,17 @@ export async function ProfileStats({ profile }: { profile: { user_id?: string, g
                 </div>
               </div>
             )}
+          </CardContent>
+        </Card>
+      )}
+
+      {!github && !leetcode && !codeforces && (
+        <Card className="bg-white/5 border-white/10 backdrop-blur-xl md:col-span-3">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <p className="text-muted-foreground mb-4">You haven&apos;t linked any coding profiles yet.</p>
+            <a href="/dashboard/settings" className="text-primary hover:underline font-medium">
+              Link profiles in Settings
+            </a>
           </CardContent>
         </Card>
       )}
