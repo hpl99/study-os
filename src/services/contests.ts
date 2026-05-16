@@ -1,7 +1,7 @@
 export interface Contest {
   id: string;
   name: string;
-  platform: "Codeforces" | "LeetCode" | "CodeChef" | "AtCoder";
+  platform: "Codeforces" | "LeetCode" | "CodeChef" | "AtCoder" | "Other";
   startTimeSeconds: number;
   durationSeconds: number;
   url: string;
@@ -18,9 +18,11 @@ export async function fetchContests(): Promise<Contest[]> {
       next: { revalidate: 3600 },
       signal: controller.signal
     });
+    
     if (cfRes.ok) {
       const cfData = await cfRes.json();
       clearTimeout(timeoutId);
+      
       if (cfData.status === "OK") {
         const upcoming = cfData.result.filter((c: { phase: string }) => c.phase === "BEFORE");
         upcoming.forEach((c: { id: number; name: string; startTimeSeconds: number; durationSeconds: number }) => {
@@ -40,25 +42,8 @@ export async function fetchContests(): Promise<Contest[]> {
     console.error("Failed to fetch Codeforces contests:", error);
   }
 
-  // Fallback mocks
-  const now = Math.floor(Date.now() / 1000);
-  contests.push({
-    id: "lc-1",
-    name: "Weekly Contest 400",
-    platform: "LeetCode",
-    startTimeSeconds: now + 86400 * 2, // 2 days from now
-    durationSeconds: 5400, // 1.5 hours
-    url: "https://leetcode.com/contest/"
-  });
-  
-  contests.push({
-    id: "at-1",
-    name: "AtCoder Beginner Contest 350",
-    platform: "AtCoder",
-    startTimeSeconds: now + 86400 * 4,
-    durationSeconds: 7200,
-    url: "https://atcoder.jp/"
-  });
+  // Future API integrations for LeetCode and AtCoder can be added here
+  // We strictly avoid injecting fake/mock data to preserve system integrity.
 
   return contests.sort((a, b) => a.startTimeSeconds - b.startTimeSeconds);
 }

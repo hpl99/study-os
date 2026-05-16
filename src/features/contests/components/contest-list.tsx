@@ -3,14 +3,15 @@
 import { useState, useEffect } from "react";
 import { Contest } from "@/services/contests";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Calendar, Clock, ExternalLink, Globe } from "lucide-react";
+import { Calendar, Clock, ExternalLink, Trophy } from "lucide-react";
 import { format } from "date-fns";
 
-const PLATFORM_COLORS = {
+const PLATFORM_COLORS: Record<string, string> = {
   LeetCode: "text-yellow-500 bg-yellow-500/10",
   Codeforces: "text-blue-500 bg-blue-500/10",
   CodeChef: "text-purple-500 bg-purple-500/10",
-  AtCoder: "text-emerald-500 bg-emerald-500/10"
+  AtCoder: "text-emerald-500 bg-emerald-500/10",
+  Other: "text-gray-400 bg-gray-500/10"
 };
 
 function CountdownTimer({ targetSeconds }: { targetSeconds: number }) {
@@ -47,12 +48,12 @@ export function ContestList({ initialContests }: { initialContests: Contest[] })
   return (
     <div className="space-y-6">
       <div className="flex gap-2 pb-4 overflow-x-auto">
-        {["All", "LeetCode", "Codeforces", "AtCoder"].map(p => (
+        {["All", "Codeforces", "LeetCode", "AtCoder"].map(p => (
           <button
             key={p}
             onClick={() => setFilter(p)}
             className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-              filter === p ? "bg-primary text-primary-foreground" : "bg-white/5 hover:bg-white/10"
+              filter === p ? "bg-primary text-primary-foreground" : "bg-white/5 hover:bg-white/10 text-muted-foreground hover:text-white"
             }`}
           >
             {p}
@@ -65,7 +66,7 @@ export function ContestList({ initialContests }: { initialContests: Contest[] })
           <Card key={contest.id} className="bg-white/5 border-white/10 backdrop-blur-xl hover:bg-white/10 transition-colors group">
             <CardHeader className="pb-3">
               <div className="flex justify-between items-start gap-4">
-                <span className={`text-xs font-semibold px-2 py-1 rounded-md ${PLATFORM_COLORS[contest.platform]}`}>
+                <span className={`text-xs font-semibold px-2 py-1 rounded-md ${PLATFORM_COLORS[contest.platform] || PLATFORM_COLORS.Other}`}>
                   {contest.platform}
                 </span>
                 <a href={contest.url} target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
@@ -100,9 +101,16 @@ export function ContestList({ initialContests }: { initialContests: Contest[] })
       </div>
       
       {filtered.length === 0 && (
-        <div className="text-center p-12 border border-white/10 rounded-xl bg-white/5 border-dashed text-muted-foreground">
-          <Globe className="w-12 h-12 mx-auto mb-4 opacity-20" />
-          <p>No upcoming contests found for this platform.</p>
+        <div className="flex flex-col items-center justify-center py-16 px-4 bg-white/5 border border-white/10 border-dashed rounded-xl">
+          <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4">
+            <Trophy className="w-8 h-8 text-muted-foreground/50" />
+          </div>
+          <h3 className="text-lg font-medium text-white mb-2">No Contests Found</h3>
+          <p className="text-sm text-muted-foreground text-center max-w-sm">
+            {filter === "All" 
+              ? "There are no upcoming contests scheduled right now." 
+              : `There are currently no upcoming contests scheduled for ${filter}.`}
+          </p>
         </div>
       )}
     </div>
